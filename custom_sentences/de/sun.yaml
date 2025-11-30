@@ -8,5 +8,5 @@ intents:
         response: sun_dusk
       - sentences:
           - "wann geht[ (heute|morgen)] die Sonne[ wieder] auf"
-          - wann wird[ e]s[ (heute|morgen)][ drau(ss|ß)en][ wieder] hell
+          - "wann wird[ e]s[ (heute|morgen)][ drau(ss|ß)en][ wieder] hell"
         response: sun_dawn

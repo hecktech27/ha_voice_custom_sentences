@@ -51,7 +51,7 @@ blueprint:
       selector:
         entity:
           filter:
-            domain: input_boolean
+            - domain: input_boolean
 
 
 # If motion is detected within the delay,

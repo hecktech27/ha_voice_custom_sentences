@@ -61,7 +61,8 @@ triggers:
 
 variables:
   ambient_sensor: !input ambient_light_sensor
-
+  ambient_threshold: !input ambient_light_threshold
+  
 condition:
   - condition: or
     conditions:

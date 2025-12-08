@@ -1,9 +1,9 @@
 blueprint:
-  name: Motion-activated Light
-  description: Turn on a light when motion is detected.
+  name: Motion-activated Light with brightness sensors
+  description: Turn on a light when motion is detected based on ambient brightness
   domain: automation
-  source_url: https://github.com/home-assistant/core/blob/dev/homeassistant/components/automation/blueprints/motion_light.yaml
-  author: Home Assistant
+  source_url: https://github.com/hecktech27/ha_tools/blob/main/blueprints/motion.yaml
+  author: hecktech27
   input:
     motion_entity:
       name: Motion Sensor

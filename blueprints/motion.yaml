@@ -49,8 +49,8 @@ blueprint:
     override_switch:
       name: Override Switch to disable motion light
       selector:
-        target:
-          entity:
+        entity:
+          filter:
             domain: input_boolean
 
 

@@ -78,7 +78,7 @@ condition:
       - condition: template
         value_template: "{{ override == 'none' }}"      
       - condition: state
-        entity_id: !override_switch
+        entity_id: !input override_switch
         state: off
     - condition: or
       conditions:

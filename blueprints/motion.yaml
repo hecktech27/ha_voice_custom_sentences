@@ -21,7 +21,7 @@ blueprint:
           entity:
             domain: light
     no_motion_wait:
-      name: Wait time
+      name: Wait time in seconds
       description: Time to leave the light on after last motion is detected.
       default: 120
       selector:
@@ -29,6 +29,24 @@ blueprint:
           min: 0
           max: 3600
           unit_of_measurement: seconds
+    ambient_light_sensor:
+      name: Ambient Light Sensor (optional)
+      description: Sensor measuring ambient light (lux). If empty, light always triggers on motion.
+      default: none
+      selector:
+        entity:
+          domain: sensor
+          device_class: illuminance
+    ambient_light_threshold:
+      name: Light threshold (lux)
+      description: Lights only turn on if sensor value is below this threshold.
+      default: 100
+      selector:
+        number:
+          min: 0
+          max: 10000
+          unit_of_measurement: lux
+
 
 # If motion is detected within the delay,
 # we restart the script.

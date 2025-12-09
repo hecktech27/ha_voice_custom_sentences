@@ -1,6 +1,8 @@
 blueprint:
   name: Motion-activated Light with optional ambient light sensor and override switch
-  description: Turn on a light when motion is detected based on ambient light and with optional override switch
+  description: >
+    # Advanced light triggers
+    Turn on a light when motion is detected based on ambient light and with optional override switch
   domain: automation
   source_url: https://github.com/hecktech27/ha_tools/blob/main/blueprints/motion.yaml
   author: hecktech27

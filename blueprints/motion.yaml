@@ -18,25 +18,20 @@ blueprint:
               domain: binary_sensor
             - device_class: opening
               domain: binary_sensor
-    on_change_container:
+    activate_on_change:
       name: OnChange-Devices - optional
-      collapsed: true
-      input:
-        activate_on_change:
-          name: OnChange-Devices - optional
-          description: Select one or more motion/door sensors to trigger the lights on each state change. The automation will not wait for the sensor to turn off again but will keep the light(s) on for the defined time after a state change.
-          default: none
-          collapsed: true
-          selector:
-            entity:
-              multiple: true
-              filter:
-                - device_class: occupancy
-                  domain: binary_sensor
-                - device_class: motion
-                  domain: binary_sensor
-                - device_class: opening
-                  domain: binary_sensor
+      description: Select one or more motion/door sensors to trigger the lights on each state change. The automation will not wait for the sensor to turn off again but will keep the light(s) on for the defined time after a state change.
+      default: none
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - device_class: occupancy
+              domain: binary_sensor
+            - device_class: motion
+              domain: binary_sensor
+            - device_class: opening
+              domain: binary_sensor
     light_target:
       name: "Light(s)"
       description: "selected lights will be turned on and off by the motion sensor."
@@ -70,22 +65,15 @@ blueprint:
           min: 0
           max: 10000
           unit_of_measurement: lux
-    override_switch_container:
+    override_switch:
       name: Override Switch to disable motion light - optional
-      icon: mdi:theme-light-dark
-      collapsed: true
-      input:
-        override_switch:
-          name: Override Switch to disable motion light - optional
-          description: When turned on the automation will not trigger
-          default: none
-          icon: mdi:theme-light-dark
-          collapsed: true
-          selector:
-            entity:
-              filter:
-                - domain: input_boolean
-                - domain: switch
+      description: When turned on the automation will not trigger
+      default: none
+      selector:
+        entity:
+          filter:
+            - domain: input_boolean
+            - domain: switch
 
 # If motion is detected within the delay,
 # we restart the script.

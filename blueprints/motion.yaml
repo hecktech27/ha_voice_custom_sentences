@@ -6,7 +6,8 @@ blueprint:
   author: hecktech27
   input:
     motion_entity:
-      name: Motion Sensor
+      name: Motion Sensor(s)
+      description: Select one or more motion sensors to trigger the lights
       selector:
         entity:
           multiple: true

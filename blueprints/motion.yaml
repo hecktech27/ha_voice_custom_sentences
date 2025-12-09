@@ -16,6 +16,8 @@ blueprint:
               domain: binary_sensor
             - device_class: motion
               domain: binary_sensor
+            - device_class: opening
+              domain: binary_sensor
     light_target:
       name: "Light(s)"
       description: "selected lights will be turned on and off by the motion sensor."

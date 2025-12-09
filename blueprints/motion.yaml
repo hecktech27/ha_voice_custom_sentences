@@ -171,12 +171,12 @@ actions:
                         value_template: >
                           {% set ent = motion_entities if motion_entities is iterable else [motion_entities] %}
                           {{ (ent | select('is_state', 'on') | list | count) > 0 }}
-                    sequence:
-                      - wait_for_trigger:
-                          - trigger: template
-                            value_template: >
-                              {% set ent = motion_entities if motion_entities is iterable else [motion_entities] %}
-                              {{ (ent | select('is_state', 'on') | list | count) == 0 }}
+                        sequence:
+                          - wait_for_trigger:
+                              - trigger: template
+                                value_template: >
+                                  {% set ent = motion_entities if motion_entities is iterable else [motion_entities] %}
+                                  {{ (ent | select('is_state', 'on') | list | count) == 0 }}
               - alias: "Wait the number of seconds that has been set"
                 delay: !input no_motion_wait
               - alias: "Turn off the light"

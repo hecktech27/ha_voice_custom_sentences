@@ -21,7 +21,7 @@ blueprint:
     activate_on_change:
       name: OnChange-Devices - optional
       description: Select one or more motion/door sensors to trigger the lights on each state change. The automation will not wait for the sensor to turn off again but will keep the light(s) on for the defined time after a state change.
-      default: none
+      default: []
       selector:
         entity:
           multiple: true

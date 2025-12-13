@@ -114,8 +114,8 @@ variables:
   ambient_threshold: !input ambient_light_threshold
   override: !input override_switch
   motion_entities: !input motion_entity
-  light_targets: !input light_target
-
+  light_targets: >
+    {{ expand(!input light_target) | selectattr('domain','eq','light') | list }}
 condition:
   - condition: and
     conditions:
@@ -206,6 +206,47 @@ actions:
                           {{
                             lights | selectattr('state', 'eq', 'on') | list | count > 0
                           }}
+                sequence:
+                  - alias: "Turn on the light"
+                    action: light.turn_on
+                    target: !input light_target
+                  - alias: "Wait until there is no motion from any device and doors are closed"
+                    wait_for_trigger:
+                      - trigger: template
+                        value_template: >
+                          {% set ent = motion_entities if motion_entities is iterable else [motion_entities] %}
+                          {{ 
+                            ent | select('is_state', 'on') | list | count == 0
+                          }}
+                  - alias: "Wait the number of seconds that has been set"
+                    delay: !input no_motion_wait
+                  - alias: "Turn off the light"
+                    action: light.turn_off
+                    target: !input light_target
+              # motion trigger when previously off and brightness over threshold
+              - conditions:
+                  - condition: and
+                    conditions:
+                      - condition: template
+                        value_template: >
+                          {% set lights = expand(light_targets)| selectattr('domain', 'eq', 'light') | list %}
+                          {{
+                            lights | selectattr('state', 'eq', 'on') | list | count == 0
+                          }}
+                      - condition: or
+                        conditions:
+                          # Either no sensor defined
+                          - condition: template
+                            value_template: "{{ ambient_sensor == 'none' }}"
+                          # Or sensor state is unknown/unavailable
+                          - condition: template
+                            value_template: >
+                              {{ states(ambient_sensor) in ['unknown', 'unavailable'] }}
+                          # Or sensor value below threshold
+                          - condition: template
+                            value_template: >
+                              {% set lux = states(ambient_sensor) | float(99999) %}
+                              {{ lux > ambient_threshold }}
                 sequence:
                   - alias: "Turn on the light"
                     action: light.turn_on

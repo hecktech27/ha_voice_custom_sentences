@@ -131,6 +131,10 @@ condition:
         # Either no sensor defined
         - condition: template
           value_template: "{{ ambient_sensor == 'none' }}"
+        # Or sensor state is unknown/unavailable
+        - condition: template
+          value_template: >
+            {{ states(ambient_sensor) in ['unknown', 'unavailable'] }}
         # Or sensor value below threshold
         - condition: template
           value_template: >

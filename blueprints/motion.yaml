@@ -150,6 +150,12 @@ actions:
               - motion
         sequence:
           - choose:
+              # dummy
+              - conditions:
+                  - condition: template
+                    value_template: >
+                      {{ expand(light_targets) | map(attribute='entity_id') | list }}
+                sequence:
               # motion trigger when previously off
               - conditions:
                   - condition: and

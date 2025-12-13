@@ -154,7 +154,9 @@ actions:
               - conditions:
                   - condition: template
                     value_template: >
-                      {{ expand(light_targets) | map(attribute='entity_id') | list }}
+                      {% set lights = expand(light_targets) %}
+                      {% set lights = lights | selectattr('domain','eq','light') | rejectattr('state','in',['unknown','unavailable']) | list %}
+                      {{ lights | selectattr('state','eq','on') | list | count > 0 }}
                 sequence:
               # motion trigger when previously off
               - conditions:

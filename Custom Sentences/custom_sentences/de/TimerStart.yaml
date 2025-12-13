@@ -3,8 +3,8 @@ intents:
   HassStartTimer:
     data:
       - sentences:
-          - "<timer_duration>[ für[ (<artikel_bestimmt>|<possessivpronom_mein>|<possessivpronom_unser>)]][ {timer_name:name}[[-]timer]]"
-          - "[für[ (<artikel_bestimmt>|<possessivpronom_mein>|<possessivpronom_unser>)] ][{timer_name:name} ]<timer_duration>"
-          - "[{timer_name:name}[[-]timer][ für] ]<timer_duration>"
+          - "<timer_duration>[ ab jetzt][ für[ (<artikel_bestimmt>|<possessivpronom_mein>|<possessivpronom_unser>)]][ {timer_name:name}[[-]timer]]"
+          - "[für[ (<artikel_bestimmt>|<possessivpronom_mein>|<possessivpronom_unser>)] ][{timer_name:name} ]<timer_duration>[ ab jetzt]"
+          - "[{timer_name:name}[[-]timer][ für] ]<timer_duration>[ ab jetzt]"
           # the following sentence is a fix for "{timer_name:name} <timer_duration>" not working correct
-          - "({timer_name:name} <timer_duration_seconds>|{timer_name:name} <timer_duration_minutes>|{timer_name:name} <timer_duration_hours>)"
+          - "({timer_name:name} <timer_duration_seconds>|{timer_name:name} <timer_duration_minutes>|{timer_name:name} <timer_duration_hours>)[ ab jetzt]"

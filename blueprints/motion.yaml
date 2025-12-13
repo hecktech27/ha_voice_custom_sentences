@@ -65,7 +65,7 @@ blueprint:
     ambient_light_threshold:
       name: Light threshold (lux) - optional
       description: Lights only turn on if sensor value is below this threshold.
-      default: 100
+      default: 40
       selector:
         number:
           min: 0

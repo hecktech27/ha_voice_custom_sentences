@@ -1,0 +1,245 @@
+blueprint:
+  name: Zigbee IEEE Action Router
+  description: >
+    Toggle switches/lights/input_booleans from ZHA_events.
+
+    This is useful for e.g. Aqara Buttons.
+  domain: automation
+  input:
+
+    group1:
+      name: Group 1
+      icon: mdi:numeric-1-circle
+      collapsed: false
+      input:
+        g1_ieee:
+          name: Device IEEE
+          selector:
+            text:
+              multiple: true
+        g1_action:
+          name: Action
+          selector:
+            select:
+              options:
+                - single
+                - double
+                - release
+
+    group2:
+      name: Group 2 (optional)
+      icon: mdi:numeric-2-circle
+      collapsed: true
+      input:
+        g2_ieee:
+          name: Device IEEE
+          default: []
+          selector:
+            text:
+              multiple: true
+        g2_action:
+          name: Action
+          default: single
+          selector:
+            select:
+              options: [single, double, release]
+
+    group3:
+      name: Group 3 (optional)
+      icon: mdi:numeric-3-circle
+      collapsed: true
+      input:
+        g3_ieee:
+          name: Device IEEE
+          default: []
+          selector:
+            text:
+              multiple: true
+        g3_action:
+          name: Action
+          default: single
+          selector:
+            select:
+              options: [single, double, release]
+
+    group4:
+      name: Group 4 (optional)
+      icon: mdi:numeric-4-circle
+      collapsed: true
+      input:
+        g4_ieee:
+          name: Device IEEE
+          default: []
+          selector:
+            text:
+              multiple: true
+        g4_action:
+          name: Action
+          default: single
+          selector:
+            select:
+              options: [single, double, release]
+
+    group5:
+      name: Group 5 (optional)
+      icon: mdi:numeric-5-circle
+      collapsed: true
+      input:
+        g5_ieee:
+          name: Device IEEE
+          default: []
+          selector:
+            text:
+              multiple: true
+        g5_action:
+          name: Action
+          default: single
+          selector:
+            select:
+              options: [single, double, release]
+
+    group6:
+      name: Group 6 (optional)
+      icon: mdi:numeric-6-circle
+      collapsed: true
+      input:
+        g6_ieee:
+          name: Device IEEE
+          default: []
+          selector:
+            text:
+              multiple: true
+        g6_action:
+          name: Action
+          default: single
+          selector:
+            select:
+              options: [single, double, release]
+
+    targets:
+      name: Targets
+      icon: mdi:flash
+      collapsed: false
+      input:
+        target_turn_on:
+          name: Turn ON
+          description: Devices selected here will only be turned on by this automation
+          default: {}
+          selector:
+            target:
+              entity:
+                domain:
+                  - switch
+                  - input_boolean
+                  - light
+
+        target_turn_off:
+          name: Turn OFF
+          description: Devices selected here will only be turned off by this automation
+          default: {}
+          selector:
+            target:
+              entity:
+                domain:
+                  - switch
+                  - input_boolean
+                  - light
+
+        target_on_off:
+          name: Turn ON → Delay → Turn OFF
+          description: Devices selected here will be turned on by this automation. After the configured delay they will be turned off again.
+          default: {}
+          selector:
+            target:
+              entity:
+                domain:
+                  - switch
+                  - input_boolean
+                  - light
+
+        on_off_delay:
+          name: Delay (max. 60 minutes)
+          default: 0
+          selector:
+            duration:
+              enable_day: false
+
+mode: restart
+
+trigger:
+  - platform: event
+    event_type: zha_event
+
+condition:
+  - condition: template
+    value_template: >
+      {{
+        target_turn_on != {} or
+        target_turn_off != {} or
+        target_on_off != {}
+      }}
+
+action:
+  - variables:
+      ieee: "{{ trigger.event.data.device_ieee }}"
+      action: "{{ trigger.event.data.command }}"
+
+  - choose:
+      - conditions:
+          - "{{ ieee in g1_ieee and action == g1_action }}"
+        sequence: &do_actions
+          - if:
+              - condition: template
+                value_template: "{{ target_turn_on != {} }}"
+            then:
+              - service: homeassistant.turn_on
+                target: !input target_turn_on
+
+          - if:
+              - condition: template
+                value_template: "{{ target_turn_off != {} }}"
+            then:
+              - service: homeassistant.turn_off
+                target: !input target_turn_off
+
+          - if:
+              - condition: template
+                value_template: "{{ target_on_off != {} }}"
+            then:
+              - service: homeassistant.turn_on
+                target: !input target_on_off
+              - delay: !input on_off_delay
+              - service: homeassistant.turn_off
+                target: !input target_on_off
+#          - choose:
+#              - conditions: "{{ target_turn_on != {} }}"
+#                sequence:
+#                  - service: homeassistant.turn_on
+#                    target: !input target_turn_on
+#              - conditions: "{{ target_turn_off != {} }}"
+#                sequence:
+#                  - service: homeassistant.turn_off
+#                    target: !input target_turn_off
+#              - conditions: "{{ target_on_off != {} }}"
+#                sequence:
+#                  - service: homeassistant.turn_on
+#                    target: !input target_on_off
+#                  - delay: !input on_off_delay
+#                  - service: homeassistant.turn_off
+#                    target: !input target_on_off
+
+      - conditions:
+          - "{{ ieee in g2_ieee and action == g2_action }}"
+        sequence: *do_actions
+      - conditions:
+          - "{{ ieee in g3_ieee and action == g3_action }}"
+        sequence: *do_actions
+      - conditions:
+          - "{{ ieee in g4_ieee and action == g4_action }}"
+        sequence: *do_actions
+      - conditions:
+          - "{{ ieee in g5_ieee and action == g5_action }}"
+        sequence: *do_actions
+      - conditions:
+          - "{{ ieee in g6_ieee and action == g6_action }}"
+        sequence: *do_actions

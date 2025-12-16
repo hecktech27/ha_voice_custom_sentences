@@ -198,7 +198,8 @@ action:
       - conditions:
           - condition: template
             value_template: >
-              {{ ieee in [x for x in g1_ieee if x | string | trim != ''] and action == g1_action }}
+              {% set valid_ieee = g1_ieee | reject('equalto','') | list %}
+              {{ ieee in valid_ieee and action == g1_action }}
         sequence: &do_actions
           - if:
               - condition: template
@@ -227,29 +228,34 @@ action:
       - conditions:
           - condition: template
             value_template: >
-              {{ ieee in [x for x in g2_ieee if x | string | trim != ''] and action == g2_action }}
+              {% set valid_ieee = g2_ieee | reject('equalto','') | list %}
+              {{ ieee in valid_ieee and action == g2_action }}
         sequence: *do_actions
 
       - conditions:
           - condition: template
             value_template: >
-              {{ ieee in [x for x in g3_ieee if x | string | trim != ''] and action == g3_action }}
+              {% set valid_ieee = g3_ieee | reject('equalto','') | list %}
+              {{ ieee in valid_ieee and action == g3_action }}
         sequence: *do_actions
 
       - conditions:
           - condition: template
             value_template: >
-              {{ ieee in [x for x in g4_ieee if x | string | trim != ''] and action == g4_action }}
+              {% set valid_ieee = g4_ieee | reject('equalto','') | list %}
+              {{ ieee in valid_ieee and action == g4_action }}
         sequence: *do_actions
 
       - conditions:
           - condition: template
             value_template: >
-              {{ ieee in [x for x in g5_ieee if x | string | trim != ''] and action == g5_action }}
+              {% set valid_ieee = g5_ieee | reject('equalto','') | list %}
+              {{ ieee in valid_ieee and action == g5_action }}
         sequence: *do_actions
 
       - conditions:
           - condition: template
             value_template: >
-              {{ ieee in [x for x in g6_ieee if x | string | trim != ''] and action == g6_action }}
+              {% set valid_ieee = g6_ieee | reject('equalto','') | list %}
+              {{ ieee in valid_ieee and action == g6_action }}
         sequence: *do_actions

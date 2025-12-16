@@ -8,9 +8,7 @@ blueprint:
   input:
 
     execution_mode:
-      name: Ausführungsmodus
-      description: >
-        Bestimmt, wie die Automation bei mehreren Triggern reagiert.
+      name: Execution-mode for this automation
       default: restart
       selector:
         select:
@@ -176,7 +174,7 @@ blueprint:
             duration:
               enable_day: false
 
-mode: restart
+mode: !input execution_mode
 
 trigger:
   - platform: event
@@ -198,7 +196,9 @@ action:
 
   - choose:
       - conditions:
-          - "{{ ieee in g1_ieee and action == g1_action }}"
+          - condition: template
+            value_template: >
+              {{ ieee in [x for x in g1_ieee if x | string | trim != ''] and action == g1_action }}
         sequence: &do_actions
           - if:
               - condition: template
@@ -223,35 +223,33 @@ action:
               - delay: !input on_off_delay
               - service: homeassistant.turn_off
                 target: !input target_on_off
-#          - choose:
-#              - conditions: "{{ target_turn_on != {} }}"
-#                sequence:
-#                  - service: homeassistant.turn_on
-#                    target: !input target_turn_on
-#              - conditions: "{{ target_turn_off != {} }}"
-#                sequence:
-#                  - service: homeassistant.turn_off
-#                    target: !input target_turn_off
-#              - conditions: "{{ target_on_off != {} }}"
-#                sequence:
-#                  - service: homeassistant.turn_on
-#                    target: !input target_on_off
-#                  - delay: !input on_off_delay
-#                  - service: homeassistant.turn_off
-#                    target: !input target_on_off
 
       - conditions:
-          - "{{ ieee in g2_ieee and action == g2_action }}"
+          - condition: template
+            value_template: >
+              {{ ieee in [x for x in g2_ieee if x | string | trim != ''] and action == g2_action }}
         sequence: *do_actions
+
       - conditions:
-          - "{{ ieee in g3_ieee and action == g3_action }}"
+          - condition: template
+            value_template: >
+              {{ ieee in [x for x in g3_ieee if x | string | trim != ''] and action == g3_action }}
         sequence: *do_actions
+
       - conditions:
-          - "{{ ieee in g4_ieee and action == g4_action }}"
+          - condition: template
+            value_template: >
+              {{ ieee in [x for x in g4_ieee if x | string | trim != ''] and action == g4_action }}
         sequence: *do_actions
+
       - conditions:
-          - "{{ ieee in g5_ieee and action == g5_action }}"
+          - condition: template
+            value_template: >
+              {{ ieee in [x for x in g5_ieee if x | string | trim != ''] and action == g5_action }}
         sequence: *do_actions
+
       - conditions:
-          - "{{ ieee in g6_ieee and action == g6_action }}"
+          - condition: template
+            value_template: >
+              {{ ieee in [x for x in g6_ieee if x | string | trim != ''] and action == g6_action }}
         sequence: *do_actions

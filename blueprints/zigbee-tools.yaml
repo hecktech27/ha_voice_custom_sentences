@@ -41,6 +41,7 @@ blueprint:
     event_triggers:
       name: Event trigger
       description: configure events to trigger a light automation
+      collapsed: true
       input:
         zha_device_ieee:
           name: Zigbee Device IEEE

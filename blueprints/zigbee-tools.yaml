@@ -1,0 +1,212 @@
+blueprint:
+  name: Zigbee Motion-activated Light with optional ambient light sensor and override switch
+  description: >
+    # Advanced light triggers
+    Turn on a light when motion is detected based on ambient light and with optional override switch
+  domain: automation
+  source_url: https://github.com/hecktech27/ha_tools/blob/main/blueprints/zigbee-tools.yaml
+  author: hecktech27
+  input:
+    motion_entity:
+      name: Motion or door sensor(s)
+      description: Select one or more motion/door sensors to trigger the lights
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - device_class: occupancy
+              domain: binary_sensor
+            - device_class: motion
+              domain: binary_sensor
+            - device_class: opening
+              domain: binary_sensor
+            - device_class: power
+              domain: binary_sensor
+    activate_on_change:
+      name: OnChange-Devices - optional
+      description: Select one or more motion/door sensors to trigger the lights on each state change. The automation will not wait for the sensor to turn off again but will keep the light(s) on for the defined time after a state change.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - device_class: occupancy
+              domain: binary_sensor
+            - device_class: motion
+              domain: binary_sensor
+            - device_class: opening
+              domain: binary_sensor
+            - device_class: power
+              domain: binary_sensor
+    event_triggers:
+      name: Event trigger
+      description: configure events to trigger a light automation
+      input:
+        zha_device_ieee:
+          name: Zigbee Device IEEE
+          selector:
+            text:
+              prefix: "DEVICE IEEE:"
+              multiple: true
+              multiline: true
+        zha_device_action:
+          name: Zigbee device action
+          selector:
+            select:
+              options:
+                - single
+                - double
+              multiple: true
+    light_target:
+      name: "Light(s)"
+      description: "selected lights will be turned on and off by the motion sensor."
+      selector:
+        target:
+          entity:
+            domain: light
+    no_motion_wait:
+      name: Wait time in seconds
+      description: Time to leave the light on after last motion is detected.
+      default: 120
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    ambient_light_sensor:
+      name: Ambient Light Sensor - optional
+      description: Sensor measuring ambient light (lux). If empty, light always triggers on motion.
+      default: none
+      selector:
+        entity:
+          domain: sensor
+          device_class: illuminance
+    ambient_light_threshold:
+      name: Light threshold (lux) - optional
+      description: Lights only turn on if sensor value is below this threshold.
+      default: 100
+      selector:
+        number:
+          min: 0
+          max: 10000
+          unit_of_measurement: lux
+    override_switch:
+      name: Override Switch to disable motion light - optional
+      description: When turned on the automation will not trigger
+      default: none
+      selector:
+        entity:
+          filter:
+            - domain: input_boolean
+            - domain: switch
+
+# If motion is detected within the delay,
+# we restart the script.
+mode: restart
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input motion_entity
+    from: "off"
+    to: "on"
+    id: "motion"
+  - trigger: state
+    entity_id: !input activate_on_change
+    from: "off"
+    to: "on"
+    id: "onchange"
+  - trigger: state
+    entity_id: !input activate_on_change
+    from: "on"
+    to: "off"
+    id: "onchange2"
+#  - trigger: state
+#    entity_id: !input override_switch
+#    from: "off"
+#    to: "on"
+#    id: "override"
+    
+
+variables:
+  ambient_sensor: !input ambient_light_sensor
+  ambient_threshold: !input ambient_light_threshold
+  override: !input override_switch
+  motion_entities: !input motion_entity
+
+condition:
+  - condition: and
+    conditions:
+    - condition: or
+      conditions:
+        - condition: template
+          value_template: >
+            {{ override == 'none' }}
+        - condition: template
+          value_template: >
+            {{ is_state(override, 'off') }}
+    - condition: or
+      conditions:
+        # Either no sensor defined
+        - condition: template
+          value_template: "{{ ambient_sensor == 'none' }}"
+        # Or sensor state is unknown/unavailable
+        - condition: template
+          value_template: >
+            {{ states(ambient_sensor) in ['unknown', 'unavailable'] }}
+        # Or sensor value below threshold
+        - condition: template
+          value_template: >
+            {% set lux = states(ambient_sensor) | float(99999) %}
+            {{ lux < ambient_threshold }}
+
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - motion
+        sequence:
+          - alias: "Turn on the light"
+            action: light.turn_on
+            target: !input light_target
+          - alias: "Wait until there is no motion from any device and doors are closed"
+            wait_for_trigger:
+              - trigger: template
+                value_template: >
+                  {% set ent = motion_entities if motion_entities is iterable else [motion_entities] %}
+                  {{ 
+                    ent | select('is_state', 'on') | list | count == 0
+                  }}
+          - alias: "Wait the number of seconds that has been set"
+            delay: !input no_motion_wait
+          - alias: "Turn off the light"
+            action: light.turn_off
+            target: !input light_target
+      - conditions:
+          - condition: trigger
+            id:
+              - onchange
+              - onchange2
+        sequence:
+          - alias: "Turn on the light"
+            action: light.turn_on
+            target: !input light_target
+          - alias: "Wait if any motion sensor is active"
+            choose:
+              - conditions:
+                  - condition: template
+                    value_template: >
+                      {% set ent = motion_entities if motion_entities is iterable else [motion_entities] %}
+                      {{ (ent | select('is_state', 'on') | list | count) > 0 }}
+                sequence:
+                  - wait_for_trigger:
+                      - trigger: template
+                        value_template: >
+                          {% set ent = motion_entities if motion_entities is iterable else [motion_entities] %}
+                          {{ (ent | select('is_state', 'on') | list | count) == 0 }}
+          - alias: "Wait the number of seconds that has been set"
+            delay: !input no_motion_wait
+          - alias: "Turn off the light"
+            action: light.turn_off
+            target: !input light_target

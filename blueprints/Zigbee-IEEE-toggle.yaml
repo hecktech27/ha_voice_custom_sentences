@@ -1,12 +1,24 @@
 blueprint:
-  name: Zigbee IEEE Action Router
+  name: Zigbee IEEE trigger
   description: >
-    Toggle switches/lights/input_booleans from ZHA_events.
+    Toggle/turn on/off switches/lights/input_booleans from ZHA_events.
 
     This is useful for e.g. Aqara Buttons.
   domain: automation
   input:
 
+    execution_mode:
+      name: Ausführungsmodus
+      description: >
+        Bestimmt, wie die Automation bei mehreren Triggern reagiert.
+      default: restart
+      selector:
+        select:
+          options:
+            - single
+            - restart
+            - queued
+            - parallel
     group1:
       name: Group 1
       icon: mdi:numeric-1-circle
